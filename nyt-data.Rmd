@@ -3,6 +3,8 @@ title: "nyt-data"
 author: "Ryan Collins"
 date: "2/12/2020"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -41,12 +43,12 @@ head(iowa_counties_long, n=20)
 This longer version of the data lets us run statistics in the way we are used to, with group_by and summarize:
 
 ```{r}
-iowa_counties_agg <- iowa_counties_long %>%
-  group_by(candidate) %>%
-  summarize(total_sdes = sum(votes)) %>%
-  arrange(desc(total_sdes))
-
-head(iowa_counties_agg, n=15)
+  iowa_counties_agg <- iowa_counties_long %>%
+    group_by(candidate) %>%
+    summarize(total_sdes = sum(votes)) %>%
+    arrange(desc(total_sdes))
+  
+  head(iowa_counties_agg, n=15)
 ```
 
 Now back to the original format, using pivot_wider:
@@ -74,8 +76,18 @@ head(nh_counties_all)
 Test your knowledge: Write the code to pivot the New Hampshire data to a longer form, then back. Note the inclusion of the FIPS code, which is unique to each county, changes the code"
 
 ```{r}
+nh_counties_long <- nh_counties_all %>%
+  pivot_longer(cols = c(-name,  -fips), names_to = "candidate", values_to = "votes")
+head(nh_counties_long)
 
+nh_counties_agg <- nh_counties_long %>%
+  group_by(candidate) %>%
+  summarize(total_sdes = sum(votes)) %>%
+  arrange(desc(total_sdes))
 
+nh_counties_wide <- nh_counties_long %>% 
+  pivot_wider(id_cols = name, names_from = candidate, values_from = votes)
+head(nh_counties_wide)
 ```
 
 If you wrote the above code correctly, you should be able to run the code below and [match the results from AP](https://www.google.com/search?q=fianl+results+new+hampshire&rlz=1C5CHFA_enUS865US865&oq=fianl+results+new+hampshire&aqs=chrome..69i57j33l7.3442j0j7&sourceid=chrome&ie=UTF-8).
